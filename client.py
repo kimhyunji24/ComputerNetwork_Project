@@ -1,4 +1,21 @@
 import socket
+import json
+
+
+def send_message(sock, message):
+    json_message = json.dumps(message)
+    sock.send(json_message.encode())
+    print(f"Sent: {json_message}")
+
+def receive_message(sock):
+    try:
+        data = sock.recv(1024).decode()
+        print(f"Received: {data}")
+        return json.loads(data)
+    except ConnectionResetError:
+        print("서버와의 연결이 끊겼습니다.")
+        return None
+
 
 def get_user_choice():
     while True:
