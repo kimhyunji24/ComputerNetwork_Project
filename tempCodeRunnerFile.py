@@ -1,1 +1,1 @@
-SOCK_STREAM
+(message)

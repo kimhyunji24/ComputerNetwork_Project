@@ -1,27 +1,10 @@
 import socket
-import json
-
-
-def send_message(sock, message):
-    json_message = json.dumps(message)
-    sock.send(json_message.encode())
-    print(f"Sent: {json_message}")
-
-def receive_message(sock):
-    try:
-        data = sock.recv(1024).decode()
-        print(f"Received: {data}")
-        return json.loads(data)
-    except ConnectionResetError:
-        print("서버와의 연결이 끊겼습니다.")
-        return None
-
 
 def get_user_choice():
     while True:
         try:
-            choice = input("게임을 선택하세요\n1. 숫자야구\n2. 업다운\n선택: ")
-            if choice in {'1', '2'}:
+            choice = input("게임을 선택하세요\n1. 숫자야구\n2. 업다운\n선택 (exit로 종료): ")
+            if choice in {'1', '2', 'exit'}:
                 return choice
             else:
                 print("올바른 선택이 아닙니다. 다시 시도하세요.")
@@ -44,7 +27,7 @@ def number_baseball_client():
         if "정답입니다!" in data:
             break
 
-        guess = input("숫자 3개를 입력하세요 (쉼표로 구분): ")
+        guess = input("숫자 3개를 입력하세요 (숫자 사이에 공백 없이): ")
         client_socket.sendall(guess.encode())
 
         data = client_socket.recv(1024).decode()
@@ -68,8 +51,12 @@ def up_down_client():
         if "정답입니다!" in data:
             break
 
-        guess = int(input("숫자를 입력하세요: "))
-        client_socket.sendall(str(guess).encode())
+        guess = input("숫자를 입력하세요 (exit로 종료): ")
+        if guess.lower() == 'exit':
+            client_socket.sendall("-1".encode())
+            break
+
+        client_socket.sendall(guess.encode())
 
         data = client_socket.recv(1024).decode()
         print(data)
